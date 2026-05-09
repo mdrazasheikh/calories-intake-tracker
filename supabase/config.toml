@@ -1,0 +1,10 @@
+project_id = "calories-intake-tracker"
+
+[functions.food-search]
+verify_jwt = true
+
+[functions.barcode-lookup]
+verify_jwt = true
+
+[functions.calorie-recommendation]
+verify_jwt = true
