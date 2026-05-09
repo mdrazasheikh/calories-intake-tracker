@@ -25,7 +25,7 @@ create table if not exists weight_goals (
   user_id uuid primary key references auth.users(id) on delete cascade,
   current_weight_kg numeric not null check (current_weight_kg > 0),
   target_weight_kg numeric not null check (target_weight_kg > 0),
-  weekly_change_kg numeric not null check (weekly_change_kg > 0),
+  weekly_change_kg numeric not null check (weekly_change_kg >= 0),
   goal_type text not null check (goal_type in ('lose','maintain','gain')),
   target_daily_kcal integer not null,
   estimated_days_goal integer not null,
