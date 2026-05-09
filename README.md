@@ -1,39 +1,49 @@
-# Calories Intake Tracker (Supabase-native deploy)
+# Calories Intake Tracker (Supabase-only Architecture)
 
-This project is now structured to run directly on **Supabase**:
-- Frontend can be deployed from your Git repo as a static site.
-- Backend logic needed for public data lookup/recommendation is moved to **Supabase Edge Functions**.
-- Data/auth remain on Supabase Postgres + Supabase Auth.
+You're right: **Supabase does not natively host Go services**. This project is now fully aligned to Supabase-native runtime.
 
-## What changed for Supabase hosting compatibility
-- Added `supabase/config.toml` with edge function config.
-- Added edge functions:
-  - `food-search`
-  - `barcode-lookup`
-  - `calorie-recommendation`
-- Frontend now calls Supabase Edge Functions instead of requiring the separate Go API for these flows.
+## Final Stack (Supabase native)
+- **Frontend:** Vue 3 static site (deploy from Git repo).
+- **Backend logic:** Supabase Edge Functions (Deno/TypeScript).
+- **Database:** Supabase Postgres + RLS.
+- **Auth:** Supabase Auth (email, phone OTP, Google OAuth).
 
-## Deploy from Git repo to Supabase
-1. Push this repo to GitHub/GitLab.
-2. In Supabase dashboard, connect the repository for web hosting.
-3. Set frontend env vars:
+## Supabase-hosted components in this repo
+- `supabase/functions/food-search`
+- `supabase/functions/barcode-lookup`
+- `supabase/functions/calorie-recommendation`
+- `supabase/migrations.sql`
+- `supabase/config.toml`
+- `frontend/` Vue app
+
+## Deploy from Git repo
+1. Push this repository to GitHub/GitLab.
+2. In Supabase dashboard, connect your Git repo for the frontend hosting flow.
+3. Configure frontend env vars:
    - `VITE_SUPABASE_URL`
    - `VITE_SUPABASE_ANON_KEY`
-4. Deploy edge functions:
+4. Deploy functions with Supabase CLI:
    ```bash
    supabase login
-   supabase link --project-ref <your-project-ref>
+   supabase link --project-ref <project-ref>
    supabase functions deploy food-search
    supabase functions deploy barcode-lookup
    supabase functions deploy calorie-recommendation
    ```
-5. Run migration in Supabase SQL editor: `supabase/migrations.sql`.
+5. Run SQL migration in Supabase SQL Editor:
+   - `supabase/migrations.sql`
 
-## Auth and verification
-- Email/password signup with email confirmation.
-- Phone OTP sign in / verification.
-- Google OAuth.
-All provided through Supabase Auth free tier (subject to provider limits).
+## Auth/verification setup
+Enable in Supabase dashboard:
+- Email provider with confirm email
+- Phone provider with OTP
+- Google OAuth provider
 
-## Notes
-- `backend/` Go API remains in repo for optional self-hosted API extensions, but the core hosted path on Supabase no longer depends on it.
+## Note
+The previous optional Go backend has been removed so the codebase is now strictly compatible with Supabase-native hosting.
+
+
+## Review fixes applied
+- Edge Functions now use POST payloads (compatible with `supabase.functions.invoke`).
+- Added input validation and upstream error handling in functions.
+- Added CORS and OPTIONS handling for browser compatibility.
