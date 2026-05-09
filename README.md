@@ -41,3 +41,9 @@ Enable in Supabase dashboard:
 
 ## Note
 The previous optional Go backend has been removed so the codebase is now strictly compatible with Supabase-native hosting.
+
+
+## Review fixes applied
+- Edge Functions now use POST payloads (compatible with `supabase.functions.invoke`).
+- Added input validation and upstream error handling in functions.
+- Added CORS and OPTIONS handling for browser compatibility.
