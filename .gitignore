@@ -1,0 +1,72 @@
+# Dependencies
+node_modules/
+vendor/
+.venv/
+venv/
+env/
+
+# Build outputs
+dist/
+build/
+out/
+*.class
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs & editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# Testing & coverage
+coverage/
+.nyc_output/
+*.lcov
+backend/coverage.out
+backend/coverage.txt
+.pytest_cache/
+__pycache__/
+*.pyc
+*.pyo
+
+# Package manager locks (keep or ignore based on preference)
+# package-lock.json
+# yarn.lock
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+*.cache
+supabase/.temp/
+
+.DS_Store

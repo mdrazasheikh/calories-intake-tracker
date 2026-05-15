@@ -42,12 +42,14 @@ create table if not exists user_security_settings (
   updated_at timestamptz not null default now()
 );
 
+create index if not exists intake_entries_user_id_idx on intake_entries (user_id);
+
 alter table intake_entries enable row level security;
 alter table daily_goals enable row level security;
 alter table weight_goals enable row level security;
 alter table user_security_settings enable row level security;
 
-create policy "intake_entries_owner_rw" on intake_entries for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
-create policy "daily_goals_owner_rw" on daily_goals for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
-create policy "weight_goals_owner_rw" on weight_goals for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
-create policy "security_settings_owner_rw" on user_security_settings for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+create policy "intake_entries_owner_rw" on intake_entries for all using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy "daily_goals_owner_rw" on daily_goals for all using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy "weight_goals_owner_rw" on weight_goals for all using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy "security_settings_owner_rw" on user_security_settings for all using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);

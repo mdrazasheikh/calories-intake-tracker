@@ -17,7 +17,10 @@ func NewGoalService(cfg config.Config) *GoalService {
 	if cfg.SupabaseURL == "" || cfg.SupabaseKey == "" {
 		return &GoalService{}
 	}
-	c := supabase.CreateClient(cfg.SupabaseURL, cfg.SupabaseKey)
+	c, err := supabase.NewClient(cfg.SupabaseURL, cfg.SupabaseKey, nil)
+	if err != nil {
+		return &GoalService{}
+	}
 	return &GoalService{client: c}
 }
 

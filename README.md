@@ -1,5 +1,7 @@
 # Calories Intake Tracker (Supabase-only Architecture)
 
+[![CI](https://github.com/mdrazasheikh/calories-intake-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/mdrazasheikh/calories-intake-tracker/actions/workflows/ci.yml)
+
 You're right: **Supabase does not natively host Go services**. This project is now fully aligned to Supabase-native runtime.
 
 ## Final Stack (Supabase native)
@@ -15,6 +17,11 @@ You're right: **Supabase does not natively host Go services**. This project is n
 - `supabase/migrations.sql`
 - `supabase/config.toml`
 - `frontend/` Vue app
+
+## CI and test coverage
+- Backend Go test coverage: <!-- coverage-start -->18.4%<!-- coverage-end -->
+- CI runs backend tests with coverage and builds the Vue frontend.
+- Coverage reports are uploaded as the `backend-coverage` workflow artifact.
 
 ## Deploy from Git repo
 1. Push this repository to GitHub/GitLab.

@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    name: Test and build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+          cache-dependency-path: backend/go.sum
+
+      - name: Run backend tests with coverage
+        working-directory: backend
+        run: |
+          go test ./... -covermode=count -coverprofile=coverage.out
+          go tool cover -func=coverage.out | tee coverage.txt
+          coverage="$(go tool cover -func=coverage.out | awk '/^total:/ {print $3}')"
+          echo "coverage=$coverage" >> "$GITHUB_ENV"
+
+      - name: Upload backend coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: |
+            backend/coverage.out
+            backend/coverage.txt
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+
+      - name: Update README coverage
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          python3 - <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          readme = Path("README.md")
+          coverage = os.environ["coverage"]
+          text = readme.read_text()
+          updated = re.sub(
+              r"<!-- coverage-start -->.*<!-- coverage-end -->",
+              f"<!-- coverage-start -->{coverage}<!-- coverage-end -->",
+              text,
+              count=1,
+          )
+          if updated == text:
+              raise SystemExit("coverage markers not found in README.md")
+          readme.write_text(updated)
+          PY
+
+      - name: Commit README coverage
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          if git diff --quiet README.md; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "docs: update test coverage"
+          git push
